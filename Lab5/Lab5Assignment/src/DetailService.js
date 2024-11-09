@@ -1,12 +1,47 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { ActivityIndicator, Appbar, Text } from 'react-native-paper';
 
-export default function DetailService () 
+export default function DetailService ( { route } ) 
 {
     const [ service, setService ] = useState( null );
     const [ loading, setLoading ] = useState( true );
+    const { token } = route.params;
+    const navigation = useNavigation();
+
+    const handleDelete = async ( id ) =>
+    {
+        try
+        {
+            const respone = await axios.delete( `https://kami-backend-5rs0.onrender.com/services/${ id }`, {
+                headers: {
+                    Authorization: `Bearer ${ token }`,
+                }
+            } );
+            if ( respone )
+            {
+                Alert.alert(
+                    "Service deleted successfully",
+                    "Go back to home page",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () =>
+                            {
+                                navigation.navigate( "Home" );
+                            }
+                        }
+                    ]
+                );
+            }
+        } catch ( error )
+        {
+            console.error( 'Error delete service:', error );
+        }
+    }
 
     useEffect( () =>
     {
@@ -33,6 +68,11 @@ export default function DetailService ()
         getService();
     }, [] )
 
+    function handleUpdate ( id )
+    {
+        navigation.navigate( "AddService", { token, service } );
+    }
+
     if ( loading )
     {
         return (
@@ -49,13 +89,38 @@ export default function DetailService ()
                 <Appbar.Action icon="dots-vertical" onPress={ () =>
                 {
                     Alert.alert(
-                        "Warning",
-                        "Are you sure you want to remove this service? This operation cannot be returned.",
+                        "Service Options",
+                        "Choose an action for this service.",
                         [
+                            {
+                                text: "UPDATE",
+                                onPress: () =>
+                                {
+                                    handleUpdate( service._id );
+                                },
+                            },
                             {
                                 text: "DELETE",
                                 onPress: () =>
                                 {
+                                    Alert.alert(
+                                        "Warning",
+                                        "Are you sure you want to remove this service? This operation cannot be undone.",
+                                        [
+                                            {
+                                                text: "DELETE",
+                                                onPress: () =>
+                                                {
+                                                    handleDelete( service._id );
+                                                },
+                                            },
+                                            {
+                                                text: "CANCEL",
+                                                style: "cancel",
+                                            },
+                                        ],
+                                        { cancelable: false }
+                                    );
                                 },
                             },
                             {
@@ -63,7 +128,7 @@ export default function DetailService ()
                                 style: "cancel",
                             },
                         ],
-                        { cancelable: false }
+                        { cancelable: true }
                     );
                 } } />
             </Appbar.Header>

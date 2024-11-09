@@ -1,61 +1,117 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { TextInput, Button, Appbar, Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function AddService ()
+export default function AddService ( { route } )
 {
     const [ serviceName, setServiceName ] = useState( '' );
     const [ price, setPrice ] = useState( '' );
-    const [ loading, setLoading ] = useState( false );
     const [ token, setToken ] = useState( '' );
+    const [ service, setService ] = useState( '' );
 
+    const navigation = useNavigation();
 
     useEffect( () =>
     {
-        const getToken = async () =>
+        const tempToken = route.params.token;
+        if ( tempToken )
         {
-            const tokenData = await AsyncStorage.getItem( "authToken" );
-            if ( tokenData )
-            {
-                setToken( JSON.parse( tokenData ) );
-            }
+            setToken( tempToken );
         }
+        const tempService = route.params.service;
+        if ( tempService )
+        {
+            setService( tempService );
+        }
+
     }, [] )
     const addService = async () =>
     {
         try
         {
-            const response = await axios.post( 'https://kami-backend-5rs0.onrender.com/services', {
-                name: serviceName,
-                price: price,
-            } );
-            console.log( 'Service added successfully:', response.data );
+            const response = await axios.post(
+                'https://kami-backend-5rs0.onrender.com/services',
+                {
+                    name: serviceName,
+                    price: price
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${ token }`
+                    }
+                }
+            );
+            Alert.alert(
+                "Service added successfully",
+                "Go back to home page",
+                [
+                    {
+                        text: "OK",
+                        onPress: () =>
+                        {
+                            navigation.navigate( "Home" );
+                        }
+                    }
+                ]
+            );
         } catch ( error )
         {
             console.error( 'Error adding service:', error );
-        } finally
+        }
+    };
+    const updateService = async () =>
+    {
+        try
         {
-            setLoading( false );
+            const response = await axios.put(
+                `https://kami-backend-5rs0.onrender.com/services/${ service._id }`,
+                {
+                    name: serviceName,
+                    price: price
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${ token }`
+                    }
+                }
+            );
+            Alert.alert(
+                "Service updated successfully",
+                "Go back to home page",
+                [
+                    {
+                        text: "OK",
+                        onPress: () =>
+                        {
+                            navigation.navigate( "Home" );
+                        }
+                    }
+                ]
+            );
+        } catch ( error )
+        {
+            console.error( 'Error adding service:', error );
         }
     };
 
     const handleAddService = () =>
     {
-        addService();
+        if ( addService() )
+        {
+            navigation.navigate( "Home" );
+        }
     };
 
-
-    if ( loading )
+    const handleUpdateService = () =>
     {
-        return (
-            <View style={ styles.loader }>
-                <ActivityIndicator size="large" color="#FF6A89" />
-            </View>
-        );
-    }
+        if ( updateService() )
+        {
+            navigation.navigate( "Home" );
+        }
+    };
 
     return (
         <SafeAreaProvider>
@@ -69,23 +125,37 @@ export default function AddService ()
                     <TextInput
                         mode="outlined"
                         placeholder="Input a service name"
-                        value={ serviceName }
+                        value={ serviceName || service?.name || '' }
                         onChangeText={ setServiceName }
                         style={ styles.input }
                     />
 
                     <Text style={ styles.label }>Price *</Text>
+
                     <TextInput
                         mode="outlined"
                         placeholder="0"
-                        value={ price }
-                        onChangeText={ setPrice }
+                        value={ service.price ? service.price.toString() : price?.toString() || '0' }
+                        onChangeText={ ( text ) => setPrice( text ) }
                         keyboardType="numeric"
                         style={ styles.input }
                     />
 
-                    <Button mode="contained" onPress={ handleAddService } style={ styles.addButton }>
-                        Add
+                    <Button
+                        mode="contained"
+                        onPress={ () =>
+                        {
+                            if ( !service )
+                            {
+                                handleAddService();
+                            } else
+                            {
+                                handleUpdateService();
+                            }
+                        } }
+                        style={ styles.addButton }
+                    >
+                        { service ? 'Update' : 'Add' }
                     </Button>
                 </View>
             </View>
