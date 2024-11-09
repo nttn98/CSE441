@@ -13,14 +13,10 @@ export default function DetailService ()
             try
             {
                 const serviceData = await AsyncStorage.getItem( "service" );
-                console.log( "service" + serviceData );
-
-                // setService( JSON.parse( serviceData ) );
-                // console.log( service );
-                // if ( serviceData )
-                // {
-                //     setService( JSON.parse( serviceData ) );
-                // }
+                if ( serviceData )
+                {
+                    setService( JSON.parse( serviceData ) );
+                }
 
             } catch ( error )
             {
@@ -56,7 +52,7 @@ export default function DetailService ()
                 } } />
             </Appbar.Header>
 
-            {/* <View style={ styles.detailContainer }>
+            <View style={ styles.detailContainer }>
                 <Text style={ styles.label }>Service name:</Text>
                 <Text style={ styles.value }>{ service.name ?? service.name } </Text>
 
@@ -71,7 +67,7 @@ export default function DetailService ()
 
                 <Text style={ styles.label }>Final update:</Text>
                 <Text style={ styles.value }>{ service.updatedAt ?? service.updatedAt } </Text>
-            </View> */}
+            </View>
         </View>
     );
 };
