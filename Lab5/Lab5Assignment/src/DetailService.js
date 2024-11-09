@@ -1,11 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { Appbar, Text } from 'react-native-paper';
+import { ActivityIndicator, Appbar, Text } from 'react-native-paper';
 
 export default function DetailService () 
 {
     const [ service, setService ] = useState( null );
+    const [ loading, setLoading ] = useState( true );
+
     useEffect( () =>
     {
         const getService = async () =>
@@ -22,9 +24,23 @@ export default function DetailService ()
             {
                 console.error( "Failed to load user data:", error );
             }
+            finally
+            {
+                setLoading( false );
+
+            }
         }
         getService();
     }, [] )
+
+    if ( loading )
+    {
+        return (
+            <View>
+                <ActivityIndicator size="large" color="#FF6A89" />
+            </View>
+        );
+    }
 
     return (
         <View style={ styles.container }>
