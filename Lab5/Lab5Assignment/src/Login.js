@@ -40,7 +40,6 @@ export default function Login ()
         {
             const response = await axios( config );
             setResponseData( response.data );
-            console.log( response.data );
 
             // Save token 
             if ( response.data && response.data.token )

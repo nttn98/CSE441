@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View, FlatList, } from 'react-native';
 import { Appbar, Text, IconButton, Card, ActivityIndicator, Menu, Divider, Provider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { HomeStyles } from './HomeStyles';
+import { HomeStyles } from './styles/HomeStyles';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { formatPrice } from './styles/format';
 
 export default function Home () 
 {
@@ -89,11 +90,11 @@ export default function Home ()
     const renderItem = ( { item } ) => (
         <Card style={ HomeStyles.card } onPress={ () => handleClick( item._id ) }>
             <Card.Content style={ HomeStyles.cardContent } >
-                <View style={ { width: '80%' } }>
+                <View style={ { width: '70%' } }>
                     <Text style={ HomeStyles.serviceName } numberOfLines={ 1 } ellipsizeMode="tail">{ item.name }</Text>
                 </View>
-                <View style={ { width: '25%' } }>
-                    <Text style={ HomeStyles.servicePrice } >{ item.price } đ</Text>
+                <View>
+                    <Text style={ HomeStyles.servicePrice } >{ formatPrice( item.price ) }</Text>
                 </View>
             </Card.Content>
         </Card >

@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
-import { TextInput, Button, Appbar, Text } from 'react-native-paper';
+import { TextInput, Button, Text } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function AddService ( { route } )
@@ -59,7 +59,7 @@ export default function AddService ( { route } )
             );
         } catch ( error )
         {
-            console.error( 'Error adding service:', error );
+            console.error( 'Error adding customer:', error );
         }
     };
     const updateService = async () =>
@@ -116,10 +116,6 @@ export default function AddService ( { route } )
     return (
         <SafeAreaProvider>
             <View style={ styles.container }>
-                <Appbar.Header style={ styles.header }>
-                    <Appbar.Content title="Service" />
-                </Appbar.Header>
-
                 <View style={ styles.form }>
                     <Text style={ styles.label }>Service name *</Text>
                     <TextInput
@@ -167,6 +163,7 @@ const styles = StyleSheet.create( {
     container: {
         flex: 1,
         backgroundColor: '#F8F8F8',
+        padding: 10
     },
     header: {
         backgroundColor: '#FF6A89',
