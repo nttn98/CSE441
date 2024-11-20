@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import { ActivityIndicator, Text } from "react-native-paper";
+import { ActivityIndicator, Divider, Text } from "react-native-paper";
 import { formatDate, formatPrice } from "./styles/format";
 import { useNavigation } from "@react-navigation/native";
 
@@ -61,7 +61,9 @@ export default function DetailTransaction ( { route } )
                         )
                     } }
                     keyExtractor={ ( service ) => service._id } />
+                <Divider style={ { marginVertical: 5 } } />
                 <View style={ [ style.inlineRow, { marginTop: 15 } ] }>
+
                     <Text style={ { color: 'gray' } }>Total</Text>
                     <Text style={ style.rightText }>{ formatPrice( transaction.price ) }</Text>
                 </View>
@@ -78,7 +80,7 @@ export default function DetailTransaction ( { route } )
                     <Text>Discount</Text>
                     <Text style={ style.rightText }>{ formatPrice( transaction.priceBeforePromotion - transaction.price ) }</Text>
                 </View>
-
+                <Divider style={ { marginVertical: 5 } } />
                 <View style={ [ style.inlineRow, { marginTop: 20 } ] }>
                     <Text style={ { fontWeight: 'bold', fontSize: 22 } }>Total payment</Text>
                     <Text style={ [ style.rightText, { color: "#FF6A89", fontSize: 24 } ] }>{ formatPrice( transaction.price ) }</Text>

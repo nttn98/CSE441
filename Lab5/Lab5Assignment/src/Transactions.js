@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ActivityIndicator, Card, Text } from "react-native-paper";
 import { formatDate, formatPrice } from "./styles/format";
 
@@ -51,8 +51,8 @@ export default function Transactions ()
         <Card style={ { margin: 5 } } onPress={ () => getDetailTransaction( item._id ) }>
             <Card.Content style={ style.transaction } >
                 <View style={ style.content }>
-                    <View >
-                        <Text style={ { fontWeight: 'bold' } }>{ item.id } - { formatDate( item.createdAt ) }
+                    <View style={ { flex: 1 } }>
+                        <Text variant="labelMedium" style={ { fontWeight: 'bold' } }>{ item.id } - { formatDate( item.createdAt ) }
                             <Text style={ { color: 'red', fontWeight: 'bold' } }>
                                 { item.status === 'cancelled' ? ' - ' + item.status : null }
                             </Text>
@@ -63,18 +63,18 @@ export default function Transactions ()
                             {
                                 return (
                                     <View style={ { width: '50 %' } }>
-                                        <Text numberOfLines={ 1 } ellipsizeMode="tail">- { item.name }</Text>
+                                        <Text variant="labelMedium" >- { item.name }</Text>
                                     </View>
                                 )
                             }
                             }
                             keyExtractor={ ( service ) => service._id }
                         />
-                        <Text style={ { color: 'grey' } }>Customer: { item.customer.name }</Text>
+                        <Text variant="labelMedium" style={ { color: 'grey' } }>Customer: { item.customer.name }</Text>
 
                     </View>
                     <View style={ style.pricePlace } >
-                        <Text style={ style.price } numberOfLines={ 1 } ellipsizeMode="tail"> { formatPrice( item.price ) }</Text>
+                        <Text numberOfLines={ 1 } style={ [style.price,{textAlign:'right'}] } > { formatPrice( item.price ) }</Text>
                     </View>
                 </View>
             </Card.Content>
@@ -113,7 +113,6 @@ const style = StyleSheet.create( {
     },
     content: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         padding: 1,
     },
     transaction: {
@@ -137,8 +136,9 @@ const style = StyleSheet.create( {
         fontWeight: 'bold',
     },
     pricePlace: {
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'center',
+        flexBasis: 80,
     },
     price: {
         color: "#FF6A89",
