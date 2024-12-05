@@ -4,15 +4,32 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ActivityIndicator, Card, Text } from "react-native-paper";
 import { formatDate, formatPrice } from "./styles/format";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RefreshControl } from "react-native-gesture-handler";
 
-export default function Transactions ()
+export default function Transactions ( { navigation } )
 {
     const [ transactions, setTransactions ] = useState( [] );
     const [ loading, setLoading ] = useState( true );
-    const navigation = useNavigation();
+    const [ token, setToken ] = useState( '' );
+    const [ refresh, setRefresh ] = useState( false );
 
     useEffect( () =>
     {
+        const getUserData = async () =>
+        {
+            try
+            {
+                const authToken = await AsyncStorage.getItem( "authToken" );
+                setToken( authToken );
+
+            } catch ( error )
+            {
+                console.error( "Failed to load user data:", error );
+            }
+        }
+        getUserData();
+
         const getTransactions = async () =>
         {
             try
@@ -30,7 +47,21 @@ export default function Transactions ()
             }
         }
         getTransactions();
-    }, [] )
+    }, [ refresh ] )
+
+    const onRefresh = () =>
+    {
+        setRefresh( true );
+        setTimeout( () => { setRefresh( false ) }, 500 );
+    }
+
+
+    const addTransaction = () =>
+    {
+        console.log( token );
+        navigation.navigate( "AddTransaction", { token } );
+
+    }
 
     const getDetailTransaction = async ( id ) =>
     {
@@ -40,6 +71,7 @@ export default function Transactions ()
             {
                 const respone = await axios.get( `https://kami-backend-5rs0.onrender.com/transactions/${ id }` )
                 navigation.navigate( "DetailTransaction", respone.data );
+
             } catch ( error )
             {
                 console.error( "Failed to load detail's transaction data:", error );
@@ -69,12 +101,13 @@ export default function Transactions ()
                             }
                             }
                             keyExtractor={ ( service ) => service._id }
+                            scrollEnabled={ false }
                         />
                         <Text variant="labelMedium" style={ { color: 'grey' } }>Customer: { item.customer.name }</Text>
-
                     </View>
+
                     <View style={ style.pricePlace } >
-                        <Text numberOfLines={ 1 } style={ [style.price,{textAlign:'right'}] } > { formatPrice( item.price ) }</Text>
+                        <Text numberOfLines={ 1 } style={ [ style.price, { textAlign: 'right' } ] } > { formatPrice( item.price ) }</Text>
                     </View>
                 </View>
             </Card.Content>
@@ -96,9 +129,11 @@ export default function Transactions ()
                 data={ transactions }
                 renderItem={ renderTransaction }
                 keyExtractor={ ( item ) => item._id }
+                refreshControl={ <RefreshControl refreshing={ refresh } onRefresh={ onRefresh } /> }
+
             />
-            <TouchableOpacity style={ style.btnAddTransaction } >
-                <Text style={ style.text } onPress={ () => "pressed" }>+</Text>
+            <TouchableOpacity style={ style.btnAddTransaction } onPress={ () => addTransaction() }>
+                <Text style={ style.text } >+</Text>
             </TouchableOpacity>
         </View>
 

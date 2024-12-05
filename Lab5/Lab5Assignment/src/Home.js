@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, } from 'react-native';
+import { View, FlatList, TouchableOpacity, } from 'react-native';
 import { Appbar, Text, IconButton, Card, ActivityIndicator, Menu, Divider, Provider } from 'react-native-paper';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { HomeStyles } from './styles/HomeStyles';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -110,50 +109,46 @@ export default function Home ()
     }
 
     return (
-        <Provider>
-            <SafeAreaProvider >
-                <View style={ HomeStyles.container }>
-                    {/* Header */ }
-                    <Appbar.Header style={ HomeStyles.header }>
-                        <Appbar.Content title={ authName } color="white" />
-                        {/* <IconButton icon="account-circle" size={ 24 } color="white" onPress={ handleLogout } />
-                     */}
-                        <Menu
-                            visible={ visible }
-                            onDismiss={ closeMenu } // Close menu when clicked outside
-                            anchor={ <IconButton icon="account-circle" onPress={ openMenu } size={ 24 } color="white" /> }
-                        >
-                            <Menu.Item onPress={ handleLogout } title="Logout" />
-                            <Divider />
-                            <Menu.Item onPress={ () => console.log( "Profile clicked" ) } title="Profile" />
-                            <Menu.Item onPress={ () => console.log( "Settings clicked" ) } title="Settings" />
-                        </Menu>
+        <View style={ HomeStyles.container }>
+            {/* Header */ }
+            <Appbar.Header style={ HomeStyles.header }>
+                <Appbar.Content title={ authName } color="white" />
+                <Menu
+                    visible={ visible }
+                    onDismiss={ closeMenu }
+                    anchor={ <IconButton icon="account-circle" onPress={ openMenu } size={ 24 } color="white" /> }
+                >
+                    <Menu.Item onPress={ handleLogout } title="Logout" />
+                    <Divider />
+                    <Menu.Item onPress={ () => console.log( "Profile clicked" ) } title="Profile" />
+                    <Menu.Item onPress={ () => console.log( "Settings clicked" ) } title="Settings" />
+                </Menu>
 
-                    </Appbar.Header>
-                    {/* Logo */ }
-                    <View style={ HomeStyles.logoContainer }>
-                        <Text style={ HomeStyles.logoText }>KAMI SPA</Text>
-                    </View>
+            </Appbar.Header>
+            {/* Logo */ }
+            <View style={ HomeStyles.logoContainer }>
+                <Text style={ HomeStyles.logoText }>KAMI SPA</Text>
+            </View>
 
-                    <View style={ HomeStyles.middle }>
-                        <Text style={ HomeStyles.title }>Danh sách dịch vụ</Text>
-                        <IconButton
-                            icon="plus"
-                            color="white"
-                            size={ 20 }
-                            style={ HomeStyles.circleButton }
-                            onPress={ () => handleClick( null ) }
-                        />
-                    </View>
-                    <FlatList
-                        data={ services }
-                        renderItem={ renderItem }
-                        keyExtractor={ ( item ) => item.id }
-                        contentContainerStyle={ HomeStyles.serviceList }
+            <View style={ HomeStyles.middle }>
+                <Text style={ HomeStyles.title }>Danh sách dịch vụ</Text>
+                <TouchableOpacity>
+                    <IconButton
+                        icon="plus"
+                        color="white"
+                        size={ 20 }
+                        style={ { backgroundColor: '#FF6A89' } }
+                        onPress={ () => handleClick( null ) }
                     />
-                </View>
-            </SafeAreaProvider>
-        </Provider>
+                </TouchableOpacity>
+            </View>
+            <FlatList
+                data={ services }
+                renderItem={ renderItem }
+                keyExtractor={ ( item ) => item._id }
+                contentContainerStyle={ HomeStyles.serviceList }
+            />
+        </View>
     );
 };
 

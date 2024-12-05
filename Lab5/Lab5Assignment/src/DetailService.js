@@ -4,6 +4,8 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { ActivityIndicator, Appbar, Text } from 'react-native-paper';
+import { formatDate, formatPrice } from './styles/format';
+import symbolicateStackTrace from 'react-native/Libraries/Core/Devtools/symbolicateStackTrace';
 
 export default function DetailService ( { route } ) 
 {
@@ -67,6 +69,8 @@ export default function DetailService ( { route } )
         }
         getService();
     }, [] )
+
+
 
     function handleUpdate ( id )
     {
@@ -138,16 +142,16 @@ export default function DetailService ( { route } )
                 <Text style={ styles.value }>{ service.name ?? service.name } </Text>
 
                 <Text style={ styles.label }>Price:</Text>
-                <Text style={ styles.value }>{ service.price ?? service.price } đ </Text>
+                <Text style={ styles.value }>{ formatPrice( service.price ?? service.price ) }</Text>
 
                 <Text style={ styles.label }>Creator:</Text>
                 <Text style={ styles.value }>{ service.createdBy ?? service.createdBy } </Text>
 
                 <Text style={ styles.label }>Time:</Text>
-                <Text style={ styles.value }> { service.createdAt ?? service.createdAt }</Text>
+                <Text style={ styles.value }> { formatDate( service.createdAt ?? service.createdAt ) }</Text>
 
                 <Text style={ styles.label }>Final update:</Text>
-                <Text style={ styles.value }>{ service.updatedAt ?? service.updatedAt } </Text>
+                <Text style={ styles.value }>{ formatDate( service.updatedAt ?? service.updatedAt ) } </Text>
             </View>
         </View>
     );

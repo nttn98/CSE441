@@ -1,25 +1,30 @@
-import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text, TextInput } from "react-native-paper";
 
-export default function AddCustomer ( { route } )
+export default function EditCustomer ( { route, navigation } )
 {
-
-    const token = route.params.token;
     const [ name, setName ] = useState();
     const [ phone, setPhone ] = useState();
-    const navigation = useNavigation();
+    const { id, token } = route.params
+    useEffect( () =>
+    {
+        axios.get( `https://kami-backend-5rs0.onrender.com/customers/${ id }` ).then( ( { data } ) =>
+        {
+            setName( data.name );
+            setPhone( data.phone );
+        } )
+    }, [] )
 
-    const addCustomer = async () =>
+    const updateCustomer = async () =>
     {
         try
         {
-            const response = await axios.post( `https://kami-backend-5rs0.onrender.com/customers`,
+            const response = await axios.put( `https://kami-backend-5rs0.onrender.com/customers/${ id }`,
                 {
-                    name: name,
-                    phone: phone
+                    name,
+                    phone
                 },
                 {
                     headers: {
@@ -27,19 +32,13 @@ export default function AddCustomer ( { route } )
                     }
                 }
             );
-            Alert.alert(
-                "Customer added successfully",
-                "Go back to home page",
-                [
-                    {
-                        text: "OK",
-                        onPress: () =>
-                        {
-                            navigation.navigate( "Customers" );
-                        }
-                    }
-                ]
-            );
+            Alert.alert( "Customer deleted successfully" );
+
+            setTimeout( () =>
+            {
+                navigation.goBack();
+            }, 1000 );
+
         } catch ( error )
         {
             console.error( 'Error adding service:', error );
@@ -47,6 +46,7 @@ export default function AddCustomer ( { route } )
         }
 
     }
+
     return (
         <View style={ style.container }>
             <View style={ { marginBottom: 10 } }>
@@ -61,12 +61,13 @@ export default function AddCustomer ( { route } )
                     value={ phone }
                     onChangeText={ ( text ) => setPhone( text ) } />
             </View>
-            <TouchableOpacity style={ style.buttonAdd } onPress={ () => addCustomer() }>
-                <Text style={ style.addText } >Add</Text>
+            <TouchableOpacity style={ style.buttonAdd } onPress={ () => updateCustomer() }>
+                <Text style={ style.addText } >Update</Text>
             </TouchableOpacity>
         </View>
     )
 }
+
 const style = StyleSheet.create(
     {
         container: {

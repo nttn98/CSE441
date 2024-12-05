@@ -49,14 +49,6 @@ export const HomeStyles = StyleSheet.create( {
         fontWeight: 'bold',
         color: '#000',
     },
-    circleButton: {
-        backgroundColor: '#FF6A89',
-        borderRadius: 50,
-        width: 40,
-        height: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     content: {
         paddingHorizontal: 0,
     },

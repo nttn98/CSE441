@@ -8,6 +8,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { formatPrice } from "./styles/format";
+import { RefreshControl } from "react-native-gesture-handler";
 
 export default function Customers ()
 {
@@ -15,6 +16,7 @@ export default function Customers ()
     const [ loading, setLoading ] = useState( true );
     const [ token, setToken ] = useState( '' );
     const navigation = useNavigation();
+    const [ refresh, setRefresh ] = useState( false );
 
     useEffect( () =>
     {
@@ -49,7 +51,7 @@ export default function Customers ()
         getCustomers();
 
 
-    }, [] );
+    }, [ refresh ] );
 
 
     const addCustomer = ( { token } ) =>
@@ -57,12 +59,25 @@ export default function Customers ()
         navigation.navigate( "AddCustomer", { token } );
     }
 
+    const getDetailCustomer = ( id ) =>
+    {
+        if ( id !== null )
+        {
+            navigation.navigate( "DetailCustomer", { id, token } );
+        }
+    }
+
+    const onRefresh = () =>
+    {
+        setRefresh( true );
+        setTimeout( () => { setRefresh( false ) }, 500 );
+    }
 
     const renderCustomers = ( { item } ) => (
-        <Card style={ { margin: '10' } }>
+        <Card style={ { margin: '10' } } onPress={ () => getDetailCustomer( item._id ) }>
             <Card.Content style={ CustomerStyles.customer }>
                 <View style={ CustomerStyles.content }>
-                    <View style={ { width: '80%' } }>
+                    <View style={ { width: '80%' } } >
                         <Text>Customer: { item.name }</Text>
                         <Text>Phone: { item.phone }</Text>
                         <Text>Total money: <Text style={ CustomerStyles.totalMoney }>{ formatPrice( item.totalSpent ) }</Text></Text>
@@ -73,7 +88,6 @@ export default function Customers ()
                             icon={ () => (
                                 <MaterialCommunityIcons name="crown" size={ 35 } color="#FF6A89" />
                             ) }
-                            onPress={ 'pressed' }
                             color="#FF6A89"
                         />
                         <Text style={ { color: "#FF6A89", fontWeight: "bold", marginTop: "-10" } } > Guest</Text>
@@ -99,9 +113,11 @@ export default function Customers ()
                 renderItem={ renderCustomers }
                 keyExtractor={ ( item ) => item._id }
                 contentContainerStyle={ HomeStyles.serviceList }
+                refreshControl={ <RefreshControl refreshing={ refresh } onRefresh={ onRefresh } /> }
+
             />
-            <TouchableOpacity style={ CustomerStyles.btnAddCustomer } >
-                <Text style={ CustomerStyles.plusText } onPress={ () => addCustomer( { token } ) }>+</Text>
+            <TouchableOpacity style={ CustomerStyles.btnAddCustomer } onPress={ () => addCustomer( { token } ) }>
+                <Text style={ CustomerStyles.plusText } >+</Text>
             </TouchableOpacity>
         </View >
 
